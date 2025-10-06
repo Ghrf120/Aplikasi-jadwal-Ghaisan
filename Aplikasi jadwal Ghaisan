@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Lengkap & Piket</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="default theme-body min-h-screen flex items-center justify-center p-6">
+  <!-- LOGIN FORM -->
+  <div id="loginPage" class="theme-card p-8 rounded-2xl max-w-sm w-full text-center">
+    <h2 class="text-2xl font-bold theme-text-primary mb-4">Login</h2>
+    <input id="username" type="text" placeholder="Username" class="w-full p-2 border rounded mb-3">
+    <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-4">
+    <button onclick="login()" class="w-full p-2 theme-accent-bg text-white rounded hover:opacity-90">Login</button>
+    <p id="loginError" class="text-red-600 mt-3 hidden">Username atau password salah!</p>
+  </div>
+
+  <!-- HALAMAN UTAMA -->
+  <div id="mainPage" class="hidden flex-col w-full max-w-3xl mx-auto space-y-4">
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold theme-text-primary">Jadwal & Piket</h1>
+      <div>
+        <span id="roleBadge" class="px-3 py-1 rounded-lg theme-accent-bg text-white text-sm font-semibold mr-2"></span>
+        <button onclick="logout()" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Logout</button>
+      </div>
+    </div>
+
+    <!-- Contoh Jadwal -->
+    <div id="scheduleList" class="theme-card p-4 rounded-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <div>
+          <h2 class="font-semibold text-lg theme-text-primary">Senin</h2>
+          <p class="theme-text-secondary">B. Indonesia, Informatika, BK, Geografi</p>
+        </div>
+        <div class="actionButtons hidden space-x-2">
+          <button class="bg-yellow-400 px-2 py-1 rounded text-white hover:bg-yellow-500">Edit</button>
+          <button class="bg-red-500 px-2 py-1 rounded text-white hover:bg-red-600">Hapus</button>
+        </div>
+      </div>
+      <div class="flex justify-between items-center border-b pb-2">
+        <div>
+          <h2 class="font-semibold text-lg theme-text-primary">Selasa</h2>
+          <p class="theme-text-secondary">B. Sunda, PJOK, Sejarah, BK, B. Inggris</p>
+        </div>
+        <div class="actionButtons hidden space-x-2">
+          <button class="bg-yellow-400 px-2 py-1 rounded text-white hover:bg-yellow-500">Edit</button>
+          <button class="bg-red-500 px-2 py-1 rounded text-white hover:bg-red-600">Hapus</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tombol tambah jadwal (hanya admin) -->
+    <div id="addScheduleContainer" class="hidden">
+      <button class="theme-accent-bg text-white px-4 py-2 rounded-lg hover:opacity-90">+ Tambah Jadwal</button>
+    </div>
+  </div>
+
+  <script>
+    const loginPage = document.getElementById("loginPage");
+    const mainPage = document.getElementById("mainPage");
+    const loginError = document.getElementById("loginError");
+    const roleBadge = document.getElementById("roleBadge");
+    const addScheduleContainer = document.getElementById("addScheduleContainer");
+    const actionButtons = document.querySelectorAll(".actionButtons");
+
+    // Cek apakah sudah login sebelumnya
+    window.onload = () => {
+      const user = localStorage.getItem("user");
+      if (user) {
+        showMainPage(user);
+      }
+    };
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (username === "admin123" && password === "admin123") {
+        localStorage.setItem("user", "admin");
+        showMainPage("admin");
+      } else if (username === "user123" && password === "user123") {
+        localStorage.setItem("user", "user");
+        showMainPage("user");
+      } else {
+        loginError.classList.remove("hidden");
+      }
+    }
+
+    function showMainPage(role) {
+      loginPage.classList.add("hidden");
+      mainPage.classList.remove("hidden");
+      roleBadge.textContent = role === "admin" ? "Admin" : "User";
+      roleBadge.classList.toggle("bg-green-600", role === "admin");
+      roleBadge.classList.toggle("bg-blue-600", role === "user");
+
+      if (role === "admin") {
+        addScheduleContainer.classList.remove("hidden");
+        actionButtons.forEach(btn => btn.classList.remove("hidden"));
+      } else {
+        addScheduleContainer.classList.add("hidden");
+        actionButtons.forEach(btn => btn.classList.add("hidden"));
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("user");
+      mainPage.classList.add("hidden");
+      loginPage.classList.remove("hidden");
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      loginError.classList.add("hidden");
+    }
+  </script>
+</body>
+</html>
